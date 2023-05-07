@@ -19,7 +19,20 @@
     <div class="container">
         <div class="d-flex align-items-center justify-content-center vh-100">
             <div class="text-center">
-                <h2 class="fs-3"> <span class="text-success">Obrigada pelo seu pagamento</span></h2>
+                @if (session('viewData.paymentMethod') == 'ticket')
+                    <h2 class="fs-3 my-3"> <span class="text-success">Para concluir o seu pagamento</span></h2>
+                    <p class="lead">Copie a linha digitável no seu aplicativo</p>
+                    <span>{{session('viewData.barCode')}}</span>
+                @elseif (session('viewData.paymentMethod') == 'pix')
+                    <h2 class="fs-3 my-3"> <span class="text-success">Para concluir o seu pagamento</span></h2>
+                    <p class="lead">Leia o QrCode pelo seu aplicativo</p>
+                    <img src="data:image/png;base64, {{session('viewData.encodedImage')}}"/>
+                    <br>
+                    <p class="lead">Se desejar usar o "Pix Copia e Cola" copie o código e cole no seu aplicativo</p>
+                    <span>{{session('viewData.payload')}}</span>
+                @else
+                    <h2 class="fs-3 my-3"> <span class="text-success">Agradecemos o seu pagamento</span></h2>
+                @endif
             </div>
         </div>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\RequestDTO;
+use App\Exceptions\PaymentError;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
@@ -19,11 +20,18 @@ class PaymentController extends Controller
     {
         try {
             $requestDTO = (new RequestDTO())->fromRequest($request);
-            $this->paymentService->createPayment($requestDTO);
+            $response = $this->paymentService->process($requestDTO);
 
-            return view('thankyou');
+            $viewData['paymentMethod'] = $requestDTO->getPaymentMethod();
+            if (!is_null($response)) {
+                $viewData = array_merge($viewData, $response->toArray());
+
+                return redirect()->route('obrigado')->with('viewData', $viewData);
+            }
+
+            return redirect()->route('obrigado')->with('viewData', $viewData);
         } catch (\Throwable $exception) {
-            return view('error');
+            return redirect()->route('erro');
         }
     }
 }

@@ -18,3 +18,11 @@ Route::get('/', function () {
 });
 
 Route::post('/finalizar-pagamento', 'App\Http\Controllers\PaymentController@payment');
+
+Route::get('/obrigado', function () {
+    return view('thankyou');
+})->name('obrigado');
+
+Route::get('/ops', function () {
+    return view('error');
+})->name('erro');

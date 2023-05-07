@@ -7,6 +7,7 @@ use App\External\Asaas\AsaasAPI;
 use App\External\Asaas\DTOs\CreateClientRequestDTO;
 use App\External\Asaas\DTOs\CreateClientResponseDTO;
 use App\External\Asaas\DTOs\CreatePaymentRequestDTO;
+use App\External\Asaas\DTOs\CreatePaymentResponseDTO;
 use App\External\Asaas\DTOs\CreditCardDTO;
 use App\External\Asaas\DTOs\CreditCardHolderInfoDTO;
 use App\External\Asaas\Enum\BillingTypeEnum;
@@ -17,6 +18,7 @@ class PaymentService
 {
     private RequestDTO $requestDTO;
     private CreateClientResponseDTO $createClientResponseDTO;
+    private CreatePaymentResponseDTO $createPaymentResponseDTO;
     private AsaasAPI $asaasAPI;
 
     public function __construct(AsaasAPI $asaasAPI)
@@ -24,11 +26,31 @@ class PaymentService
         $this->asaasAPI = $asaasAPI;
     }
 
-    public function createPayment(RequestDTO $requestDTO)
+    public function process(RequestDTO $requestDTO)
     {
         $this->requestDTO = $requestDTO;
+        $this->createClient();
+        return $this->createPayment();
+    }
+
+    private function createClient()
+    {
         $this->createClientResponseDTO = $this->asaasAPI->createClient($this->prepareClientRequest());
-        $this->asaasAPI->createPayment($this->preparePaymentRequest());
+    }
+
+    private function createPayment()
+    {
+        $this->createPaymentResponseDTO = $this->asaasAPI->createPayment($this->preparePaymentRequest());
+
+        if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::PIX) {
+            return $this->asaasAPI->generatePixQrCode($this->createPaymentResponseDTO->getId());
+        }
+
+        if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::TICKET) {
+            return $this->asaasAPI->generateTicket($this->createPaymentResponseDTO->getId());
+        }
+
+        return null;
     }
 
     private function prepareClientRequest(): CreateClientRequestDTO
