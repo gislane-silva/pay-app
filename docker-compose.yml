@@ -36,7 +36,6 @@ services:
         command: --default-authentication-plugin=mysql_native_password
         restart: always
         environment:
-            MYSQL_ROOT_PASSWORD: ${DB_USERNAME}
             MYSQL_DATABASE: ${DB_DATABASE}
 
     phpmyadmin:
@@ -47,8 +46,6 @@ services:
             - "8080:80"
         links:
             - mysql
-        environment:
-            - PMA_ARBITRARY=1
 
     # queue
     queue:
