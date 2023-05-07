@@ -5,43 +5,43 @@ namespace App\External\Asaas\DTOs;
 use App\Helpers\UtilsHelper;
 use GuzzleHttp\Psr7\Response;
 
-class TicketResponseDTO
+class PaymentLinkResponseDTO
 {
-    private string $barCode;
+    private string $url;
 
     private const FIELDS_REQUIRED = [
-        'barCode'
+        'url'
     ];
 
     public function __construct(Response $response)
     {
         $data = json_decode($response->getBody()->getContents(), true);
         UtilsHelper::validateFields($data, self::FIELDS_REQUIRED);
-        $this->setBarCode($data['barCode']);
+        $this->setUrl($data['url']);
     }
 
     public function toArray(): array
     {
         return [
-            'barCode' => $this->getBarCode()
+            'url' => $this->getUrl()
         ];
     }
 
     /**
      * @return string
      */
-    public function getBarCode(): string
+    public function getUrl(): string
     {
-        return $this->barCode;
+        return $this->url;
     }
 
     /**
-     * @param string $barCode
-     * @return TicketResponseDTO
+     * @param string $url
+     * @return PaymentLinkResponseDTO
      */
-    public function setBarCode(string $barCode): TicketResponseDTO
+    public function setUrl(string $url): PaymentLinkResponseDTO
     {
-        $this->barCode = $barCode;
+        $this->url = $url;
         return $this;
     }
 }

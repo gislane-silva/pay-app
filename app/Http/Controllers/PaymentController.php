@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\RequestDTO;
-use App\Exceptions\PaymentError;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 

@@ -2,38 +2,26 @@
 
 namespace App\External\Asaas;
 
-use App\Exceptions\PaymentError;
+use App\Exceptions\PaymentErrorException;
 use App\External\Asaas\DTOs\CreateClientRequestDTO;
 use App\External\Asaas\DTOs\CreateClientResponseDTO;
 use App\External\Asaas\DTOs\CreatePaymentRequestDTO;
 use App\External\Asaas\DTOs\CreatePaymentResponseDTO;
+use App\External\Asaas\DTOs\PaymentLinkRequestDTO;
 use App\External\Asaas\DTOs\PixQrCodeResponseDTO;
-use App\External\Asaas\DTOs\TicketResponseDTO;
-use Exception;
+use App\External\Asaas\DTOs\PaymentLinkResponseDTO;
 use GuzzleHttp\Client;
 use Illuminate\Http\Response;
 
 class AsaasAPI
 {
     protected Client $client;
-    const URI = "https://sandbox.asaas.com/api/v3/";
 
-    public function __construct()
+    public function __construct(AsaasClient $client)
     {
-        $this->client = new Client([
-            'base_uri' => self::URI,
-            'headers' => [
-                "Content-Type" => "application/json",
-                "access_token" => config('services.asaas.key')
-            ]
-        ]);
+        $this->client = $client->getHttpClient();
     }
 
-    /**
-     * @param CreateClientRequestDTO $request
-     * @return CreateClientResponseDTO
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function createClient(CreateClientRequestDTO $request): CreateClientResponseDTO
     {
         $response = $this->client->post('customers', [
@@ -44,14 +32,9 @@ class AsaasAPI
             return new CreateClientResponseDTO($response);
         }
 
-        throw new PaymentError('Erro ao criar cliente');
+        throw new PaymentErrorException('Erro ao criar cliente');
     }
 
-    /**
-     * @param CreatePaymentRequestDTO $request
-     * @return CreatePaymentResponseDTO
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function createPayment(CreatePaymentRequestDTO $request): CreatePaymentResponseDTO
     {
         $response = $this->client->post('payments', [
@@ -62,21 +45,23 @@ class AsaasAPI
             return new CreatePaymentResponseDTO($response);
         }
 
-        throw new PaymentError('Erro ao criar pagamento');
+        throw new PaymentErrorException('Erro ao criar pagamento');
     }
 
-    public function generateTicket(string $idPayment)
+    public function generateTicketLink(PaymentLinkRequestDTO $request): PaymentLinkResponseDTO
     {
-        $response = $this->client->get(sprintf('payments/%s/identificationField', $idPayment));
+        $response = $this->client->post('paymentLinks',[
+            'json' => $request->toArray()
+        ]);
 
         if ($response->getStatusCode() == Response::HTTP_OK) {
-            return new TicketResponseDTO($response);
+            return new PaymentLinkResponseDTO($response);
         }
 
-        throw new PaymentError('Erro ao gerar boleto');
+        throw new PaymentErrorException('Erro ao gerar link do boleto');
     }
 
-    public function generatePixQrCode(string $idPayment)
+    public function generatePixQrCode(string $idPayment): PixQrCodeResponseDTO
     {
         $response = $this->client->get(sprintf('payments/%s/pixQrCode', $idPayment));
 
@@ -84,6 +69,6 @@ class AsaasAPI
             return new PixQrCodeResponseDTO($response);
         }
 
-        throw new PaymentError('Erro ao gerar QrCode');
+        throw new PaymentErrorException('Erro ao gerar QrCode');
     }
 }

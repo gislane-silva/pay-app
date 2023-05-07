@@ -105,7 +105,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="holderName">Nome impresso no cartão</label>
-                                <input type="text" class="form-control" id="holderName" name="holderName" placeholder="" required>
+                                <input type="text" class="form-control" id="holderName" name="holderName" placeholder="" disabled required>
                                 <small class="text-muted">Nome igual aparece no cartão</small>
                                 <div class="invalid-feedback">
                                     Nome impresso no cartão é obrigatório.
@@ -115,28 +115,28 @@
                         <div class="row">
                             <div class="col-md-5 mb-3">
                                 <label for="number">Número do cartão</label>
-                                <input type="text" class="form-control" id="number" name="number" placeholder="" required>
+                                <input type="text" class="form-control" id="number" name="number" placeholder="" disabled required>
                                 <div class="invalid-feedback">
                                     Número do cartão é obrigatório.
                                 </div>
                             </div>
                             <div class="col-md-2 mb-3">
                                 <label for="expiryMonth">Mês</label>
-                                <input type="text" class="form-control" id="expiryMonth" name="expiryMonth" placeholder="" required>
+                                <input type="text" class="form-control" id="expiryMonth" name="expiryMonth" placeholder="" disabled required>
                                 <div class="invalid-feedback">
                                     Mês de vencimento é obrigatório.
                                 </div>
                             </div>
                             <div class="col-md-2 mb-3">
                                 <label for="expiryYear">Ano</label>
-                                <input type="text" class="form-control" id="expiryYear" name="expiryYear" placeholder="" required>
+                                <input type="text" class="form-control" id="expiryYear" name="expiryYear" placeholder="" disabled required>
                                 <div class="invalid-feedback">
                                     Ano de vencimento é obrigatório.
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="cvv">CVV</label>
-                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="" required>
+                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="" disabled required>
                                 <div class="invalid-feedback">
                                     CVV é obrigatório.
                                 </div>
@@ -145,7 +145,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="installmentCount">Número de parcelas</label>
-                                <select class="form-control" id="installmentCount" name="installmentCount" required>
+                                <select class="form-control" id="installmentCount" name="installmentCount" disabled required>
                                     <option value="1">1x R$ 70,00</option>
                                     <option value="2">2x R$ 35,00</option>
                                     <option value="3">3x R$ 23,33</option>
@@ -163,21 +163,21 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="postalCode">CEP</label>
-                                    <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="00000-000" required>
+                                    <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="00000-000" disabled required>
                                     <div class="invalid-feedback">
                                         CEP é obrigatório.
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="addressNumber">Número</label>
-                                    <input type="text" class="form-control" id="addressNumber" name="addressNumber" required>
+                                    <input type="text" class="form-control" id="addressNumber" name="addressNumber" disabled required>
                                     <div class="invalid-feedback">
                                         Número é obrigatório.
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="addressComplement">Complemento</label>
-                                    <input type="text" class="form-control" id="addressComplement" name="addressComplement" placeholder="Apartamento 10">
+                                    <input type="text" class="form-control" id="addressComplement" name="addressComplement" disabled placeholder="Apartamento 10">
                                 </div>
                             </div>
                         </div>

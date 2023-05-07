@@ -10,7 +10,9 @@ use App\External\Asaas\DTOs\CreatePaymentRequestDTO;
 use App\External\Asaas\DTOs\CreatePaymentResponseDTO;
 use App\External\Asaas\DTOs\CreditCardDTO;
 use App\External\Asaas\DTOs\CreditCardHolderInfoDTO;
+use App\External\Asaas\DTOs\PaymentLinkRequestDTO;
 use App\External\Asaas\Enum\BillingTypeEnum;
+use App\External\Asaas\Enum\ChargeTypeEnum;
 use App\External\Asaas\Enum\PaymentMethodEnum;
 use Carbon\Carbon;
 
@@ -47,7 +49,14 @@ class PaymentService
         }
 
         if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::TICKET) {
-            return $this->asaasAPI->generateTicket($this->createPaymentResponseDTO->getId());
+            $paymentLinkRequest = (new PaymentLinkRequestDTO())
+                ->setName('Boleto Venda')
+                ->setValue((string)$this->requestDTO->getValue())
+                ->setBillingType(BillingTypeEnum::BILLING_TYPE_TICKET)
+                ->setChargeType(ChargeTypeEnum::DETACHED)
+                ->setDueDateLimitDays('10');
+
+            return $this->asaasAPI->generateTicketLink($paymentLinkRequest);
         }
 
         return null;

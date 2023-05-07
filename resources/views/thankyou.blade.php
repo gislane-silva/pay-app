@@ -20,9 +20,8 @@
         <div class="d-flex align-items-center justify-content-center vh-100">
             <div class="text-center">
                 @if (session('viewData.paymentMethod') == 'ticket')
-                    <h2 class="fs-3 my-3"> <span class="text-success">Para concluir o seu pagamento</span></h2>
-                    <p class="lead">Copie a linha digitável no seu aplicativo</p>
-                    <span>{{session('viewData.barCode')}}</span>
+                    <h2 class="fs-3 my-3"> <span class="text-success">Acesse o boleto para concluir o seu pagamento</span></h2>
+                    <a href="{{session('viewData.url')}}" class="btn btn-primary">Acessar boleto</a>
                 @elseif (session('viewData.paymentMethod') == 'pix')
                     <h2 class="fs-3 my-3"> <span class="text-success">Para concluir o seu pagamento</span></h2>
                     <p class="lead">Leia o QrCode pelo seu aplicativo</p>
