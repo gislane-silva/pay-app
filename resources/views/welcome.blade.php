@@ -20,6 +20,15 @@
         <div class="py-5 text-center">
             <h2>Finalize seu pedido</h2>
         </div>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="row">
             <div class="col-md-4 order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -74,7 +83,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="phone">Telefone</label>
+                            <label for="phone">Telefone Celular</label>
                             <input type="text" class="form-control" id="phone" name="phone" required>
                             <div class="invalid-feedback">
                                 Número de telefone é obrigatório.
@@ -113,28 +122,28 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="number">Número do cartão</label>
                                 <input type="text" class="form-control" id="number" name="number" placeholder="" disabled required>
                                 <div class="invalid-feedback">
                                     Número do cartão é obrigatório.
                                 </div>
                             </div>
-                            <div class="col-md-2 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="expiryMonth">Mês</label>
-                                <input type="text" class="form-control" id="expiryMonth" name="expiryMonth" placeholder="" disabled required>
+                                <input type="text" class="form-control" id="expiryMonth" name="expiryMonth" placeholder="05" disabled required>
                                 <div class="invalid-feedback">
                                     Mês de vencimento é obrigatório.
                                 </div>
                             </div>
-                            <div class="col-md-2 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="expiryYear">Ano</label>
-                                <input type="text" class="form-control" id="expiryYear" name="expiryYear" placeholder="" disabled required>
+                                <input type="text" class="form-control" id="expiryYear" name="expiryYear" placeholder="2023" disabled required>
                                 <div class="invalid-feedback">
                                     Ano de vencimento é obrigatório.
                                 </div>
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="cvv">CVV</label>
                                 <input type="text" class="form-control" id="cvv" name="cvv" placeholder="" disabled required>
                                 <div class="invalid-feedback">
@@ -163,21 +172,21 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="postalCode">CEP</label>
-                                    <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="00000-000" disabled required>
+                                    <input type="text" maxlength="8" class="form-control" id="postalCode" name="postalCode" placeholder="00000-000" disabled required>
                                     <div class="invalid-feedback">
                                         CEP é obrigatório.
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="addressNumber">Número</label>
-                                    <input type="text" class="form-control" id="addressNumber" name="addressNumber" disabled required>
+                                    <input type="text" maxlength="10" class="form-control" id="addressNumber" name="addressNumber" disabled required>
                                     <div class="invalid-feedback">
                                         Número é obrigatório.
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="addressComplement">Complemento</label>
-                                    <input type="text" class="form-control" id="addressComplement" name="addressComplement" disabled placeholder="Apartamento 10">
+                                    <input type="text" maxlength="100" class="form-control" id="addressComplement" name="addressComplement" disabled placeholder="Apartamento 10">
                                 </div>
                             </div>
                         </div>
@@ -201,6 +210,8 @@
     <script src="../../assets/js/vendor/popper.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
     <script src="../../assets/js/vendor/holder.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js" integrity="sha512-0XDfGxFliYJPFrideYOoxdgNIvrwGTLnmK20xZbCAvPfLGQMzHUsaqZK8ZoH+luXGRxTrS46+Aq400nCnAT0/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
@@ -216,6 +227,15 @@
                         $("#paymentCreditCard :input").attr("disabled", true);
                     }
                 });
+
+                $("#cpf").mask('000.000.000-00');
+                $("#phone").mask('(00) 00000-0000');
+                $("#postalCode").mask('00000-000');
+                $("#number").mask('0#');
+                $("#addressNumber").mask('0#');
+                $("#cvv").mask('000');
+                $("#expiryMonth").mask('00');
+                $("#expiryYear").mask('0000');
             });
 
             window.addEventListener('load', function() {

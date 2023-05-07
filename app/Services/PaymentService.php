@@ -19,6 +19,8 @@ use Carbon\Carbon;
 class PaymentService
 {
     private RequestDTO $requestDTO;
+    private CreateClientRequestDTO $clientRequestDTO;
+    private CreatePaymentRequestDTO $paymentRequestDTO;
     private CreateClientResponseDTO $createClientResponseDTO;
     private CreatePaymentResponseDTO $createPaymentResponseDTO;
     private AsaasAPI $asaasAPI;
@@ -31,18 +33,21 @@ class PaymentService
     public function process(RequestDTO $requestDTO)
     {
         $this->requestDTO = $requestDTO;
+        $this->prepareClientRequest();
+        $this->preparePaymentRequest();
         $this->createClient();
         return $this->createPayment();
     }
 
     private function createClient()
     {
-        $this->createClientResponseDTO = $this->asaasAPI->createClient($this->prepareClientRequest());
+        $this->createClientResponseDTO = $this->asaasAPI->createClient($this->clientRequestDTO);
     }
 
     private function createPayment()
     {
-        $this->createPaymentResponseDTO = $this->asaasAPI->createPayment($this->preparePaymentRequest());
+        $this->paymentRequestDTO->setCustomer($this->createClientResponseDTO->getId());
+        $this->createPaymentResponseDTO = $this->asaasAPI->createPayment($this->paymentRequestDTO);
 
         if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::PIX) {
             return $this->asaasAPI->generatePixQrCode($this->createPaymentResponseDTO->getId());
@@ -62,32 +67,27 @@ class PaymentService
         return null;
     }
 
-    private function prepareClientRequest(): CreateClientRequestDTO
+    private function prepareClientRequest()
     {
-        $request = new CreateClientRequestDTO();
-        $request->setName($this->requestDTO->getName())
+        $this->clientRequestDTO = new CreateClientRequestDTO();
+        $this->clientRequestDTO->setName($this->requestDTO->getName())
             ->setCpfCnpj($this->requestDTO->getCpf());
-
-        return $request;
     }
 
-    private function preparePaymentRequest(): CreatePaymentRequestDTO
+    private function preparePaymentRequest()
     {
-        $request = new CreatePaymentRequestDTO();
-        $request->setCustomer($this->createClientResponseDTO->getId())
-            ->setBillingType(BillingTypeEnum::getBillingType($this->requestDTO->getPaymentMethod()))
+        $this->paymentRequestDTO = new CreatePaymentRequestDTO();
+        $this->paymentRequestDTO->setBillingType(BillingTypeEnum::getBillingType($this->requestDTO->getPaymentMethod()))
             ->setDueDate(Carbon::now()->format('Y-m-d'))
             ->setValue($this->requestDTO->getValue());
 
         if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::CARD) {
             $installmentValue = $this->requestDTO->getValue()/$this->requestDTO->getInstallmentCount();
-            $request->setInstallmentCount($this->requestDTO->getInstallmentCount())
+            $this->paymentRequestDTO->setInstallmentCount($this->requestDTO->getInstallmentCount())
                 ->setInstallmentValue($installmentValue)
                 ->setCreditCard($this->prepareCreditCard())
                 ->setCreditCardHolderInfo($this->prepareCreditCardHolderInfo());
         }
-
-        return $request;
     }
 
     private function prepareCreditCard(): CreditCardDTO

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\RequestDTO;
+use App\Http\Requests\PaymentRequest;
 use App\Services\PaymentService;
-use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
@@ -15,9 +15,11 @@ class PaymentController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function payment(Request $request)
+    public function payment(PaymentRequest $request)
     {
         try {
+            $request->validated();
+
             $requestDTO = (new RequestDTO())->fromRequest($request);
             $response = $this->paymentService->process($requestDTO);
 

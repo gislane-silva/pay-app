@@ -21,7 +21,6 @@ class RequestDTO
     private string $expiryYear;
     private string $cvv;
     private int $installmentCount;
-    private float $installmentValue;
 
     private string $postalCode;
     private string $addressNumber;
