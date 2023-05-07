@@ -1,5 +1,8 @@
 ### Passo a passo
 Clone Repositório
+```sh
+git clone https://github.com/gislane-silva/pay-app.git
+```
 
 Crie o Arquivo .env
 ```sh

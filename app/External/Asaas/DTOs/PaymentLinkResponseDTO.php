@@ -2,10 +2,11 @@
 
 namespace App\External\Asaas\DTOs;
 
+use App\External\Common\ResponseDTOInterface;
 use App\Helpers\UtilsHelper;
 use GuzzleHttp\Psr7\Response;
 
-class PaymentLinkResponseDTO
+class PaymentLinkResponseDTO implements ResponseDTOInterface
 {
     private string $url;
 

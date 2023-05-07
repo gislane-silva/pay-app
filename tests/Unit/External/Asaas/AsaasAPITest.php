@@ -27,6 +27,7 @@ class AsaasAPITest extends TestCase
 {
     private AsaasAPI $asaasAPI;
     public $faker;
+
     public function setUp(): void
     {
         parent::setUp();
