@@ -10,8 +10,6 @@ services:
         working_dir: /var/www/
         volumes:
             - ./:/var/www
-        depends_on:
-            - redis
         networks:
             - laravel
 
@@ -32,11 +30,14 @@ services:
         image: mysql:latest
         container_name: mysql
         ports:
-            - "3306:3306"
+            - "8885:3306"
         command: --default-authentication-plugin=mysql_native_password
         restart: always
         environment:
             MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: 'root'
+        networks:
+            - laravel
 
     phpmyadmin:
         image: phpmyadmin:latest
@@ -46,26 +47,10 @@ services:
             - "8080:80"
         links:
             - mysql
-
-    # queue
-    queue:
-        image: especializati/laravel9-app
-        restart: unless-stopped
-        command: "php artisan queue:work"
-        volumes:
-            - ./:/var/www
-        depends_on:
-            - redis
-            - app
+        environment:
+            - PMA_ARBITRARY=1
         networks:
             - laravel
-
-    # redis
-    redis:
-        image: redis:latest
-        networks:
-            - laravel
-
 networks:
     laravel:
         driver: bridge

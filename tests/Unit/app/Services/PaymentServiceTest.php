@@ -11,6 +11,7 @@ use App\External\Asaas\DTOs\PixQrCodeResponseDTO;
 use App\External\Asaas\Enum\BillingTypeEnum;
 use App\External\Asaas\Enum\PaymentMethodEnum;
 use App\External\Common\ResponseDTOInterface;
+use App\Repositories\PaymentRepository;
 use App\Services\PaymentService;
 use Faker\Factory;
 use GuzzleHttp\Psr7\Response;
@@ -19,6 +20,7 @@ use Tests\TestCase;
 class PaymentServiceTest extends TestCase
 {
     public AsaasAPI $asaasAPI;
+    public PaymentRepository $paymentRepository;
     private PaymentService $paymentService;
     public $faker;
 
@@ -26,7 +28,8 @@ class PaymentServiceTest extends TestCase
     {
         parent::setUp();
         $this->asaasAPI = \Mockery::mock(AsaasAPI::class);
-        $this->paymentService = new PaymentService($this->asaasAPI);
+        $this->paymentRepository = \Mockery::mock(PaymentRepository::class);
+        $this->paymentService = new PaymentService($this->asaasAPI, $this->paymentRepository);
         $this->faker = Factory::create();
     }
 
@@ -42,6 +45,8 @@ class PaymentServiceTest extends TestCase
         $this->asaasAPI->shouldReceive('createPayment')->andReturn(
             (new CreatePaymentResponseDTO($this->mockResponseCreatePayment()))
         );
+
+        $this->paymentRepository->shouldReceive('savePayment')->andReturn();
 
         if ($billingType == BillingTypeEnum::BILLING_TYPE_CREDIT_CARD) {
             $result = $this->paymentService->process($this->mockRequestDTO($billingType, $paymentMethod));
@@ -65,7 +70,7 @@ class PaymentServiceTest extends TestCase
         self::assertInstanceOf(ResponseDTOInterface::class, $result);
     }
 
-    public function providerPaymentMethod(): \Generator
+    public static function providerPaymentMethod(): \Generator
     {
         yield 'CARD' => [BillingTypeEnum::BILLING_TYPE_CREDIT_CARD, PaymentMethodEnum::CARD];
         yield 'PIX' => [BillingTypeEnum::BILLING_TYPE_PIX, PaymentMethodEnum::PIX];

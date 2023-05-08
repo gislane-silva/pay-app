@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\PaymentDTO;
 use App\DTOs\RequestDTO;
 use App\External\Asaas\AsaasAPI;
 use App\External\Asaas\DTOs\CreateClientRequestDTO;
@@ -14,6 +15,7 @@ use App\External\Asaas\DTOs\PaymentLinkRequestDTO;
 use App\External\Asaas\Enum\BillingTypeEnum;
 use App\External\Asaas\Enum\ChargeTypeEnum;
 use App\External\Asaas\Enum\PaymentMethodEnum;
+use App\Repositories\PaymentRepository;
 use Carbon\Carbon;
 
 class PaymentService
@@ -24,10 +26,14 @@ class PaymentService
     private CreateClientResponseDTO $createClientResponseDTO;
     private CreatePaymentResponseDTO $createPaymentResponseDTO;
     private AsaasAPI $asaasAPI;
+    private PaymentRepository $paymentRepository;
 
-    public function __construct(AsaasAPI $asaasAPI)
-    {
+    public function __construct(
+        AsaasAPI $asaasAPI,
+        PaymentRepository $paymentRepository
+    ) {
         $this->asaasAPI = $asaasAPI;
+        $this->paymentRepository = $paymentRepository;
     }
 
     public function process(RequestDTO $requestDTO)
@@ -36,7 +42,8 @@ class PaymentService
         $this->prepareClientRequest();
         $this->preparePaymentRequest();
         $this->createClient();
-        return $this->createPayment();
+        $this->createPayment();
+        return $this->getReturnData();
     }
 
     private function createClient()
@@ -48,7 +55,16 @@ class PaymentService
     {
         $this->paymentRequestDTO->setCustomer($this->createClientResponseDTO->getId());
         $this->createPaymentResponseDTO = $this->asaasAPI->createPayment($this->paymentRequestDTO);
+        $paymentDTO = (new PaymentDTO())->setValue($this->requestDTO->getValue())
+            ->setPaymentMethod(BillingTypeEnum::getBillingType($this->requestDTO->getPaymentMethod()))
+            ->setIdentifierCustomer($this->createClientResponseDTO->getId())
+            ->setIdentifierPayment($this->createPaymentResponseDTO->getId());
 
+        $this->paymentRepository->savePayment($paymentDTO);
+    }
+
+    private function getReturnData()
+    {
         if ($this->requestDTO->getPaymentMethod() == PaymentMethodEnum::PIX) {
             return $this->asaasAPI->generatePixQrCode($this->createPaymentResponseDTO->getId());
         }
